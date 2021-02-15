@@ -1,0 +1,28 @@
+{
+  "name": "mockalicious",
+  "version": "0.0.0",
+  "description": "Keep on mocking in the free world",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mocking",
+    "ESM",
+    "ecmascript modules",
+    "test",
+    "testing",
+    "mocks",
+    "CJS",
+    "native"
+  ],
+  "author": "@davidmarkclem",
+  "license": "ISC",
+  "dependencies": {
+    "atomic-sleep": "^1.0.0",
+    "sonic-boom": "^1.3.2"
+  },
+  "devDependencies": {
+    "tap": "^14.11.0"
+  }
+}
