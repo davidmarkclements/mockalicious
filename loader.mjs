@@ -65,14 +65,13 @@ global[kMockalicious].clear = () => {
 export function resolve (specifier, ctx, defaultResolve) {
   const { names, counter } = current
   if (/node:/.test(specifier)) specifier = specifier.split(':')[1]
-
   if (names.has(specifier)) {
     // counter busts cache
     return {
       url: `mockalicious:${specifier}:${counter}`
     }
   }
-
+  if (specifier[0] === '.') specifier += `?c=${counter}`
   return defaultResolve(specifier, ctx, defaultResolve)
 }
 
@@ -100,7 +99,9 @@ export async function getSource (url, ctx, defaultGetSource) {
         // the following checks if the export value is legal
         sanity(`const ${k} = 1`)
         return `export const ${k} = mod['${k}']`
-      } catch (err) {}
+      } catch {
+        return ''
+      }
     }).filter(Boolean)
     if (api.includes('default') === false) exports.push('export default mod')
     else exports.push('export default mod.default')

@@ -1,8 +1,9 @@
 'use strict'
+const sleep = require('atomic-sleep')
 const { openSync } = require('fs')
 const { fileURLToPath } = require('url')
 const { createRequire } = require('module')
-const { Worker, SHARE_ENV, isMainThread } = require('worker_threads')
+const { Worker, SHARE_ENV } = require('worker_threads')
 const kMockalicious = Symbol.for('mockalicious')
 const loader = require.resolve('./loader.mjs')
 
@@ -30,7 +31,9 @@ function mockalicious (file) {
       execArgv: ['--experimental-loader=' + loader]
     })
     if ('setRawMode' in process.stdin) process.stdin.setRawMode(true)
-    while ((Atomics.load(meta, 0) === -1)) {}
+    while ((Atomics.load(meta, 0) === -1)) {
+      sleep(250) // keep pressure off cpu
+    }
     const [code] = meta
     process.exit(code)
   }
