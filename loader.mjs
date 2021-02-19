@@ -58,7 +58,16 @@ global[kMockalicious].get = (key) => current.mocks[key]
 
 global[kMockalicious].clear = () => {
   const { cache } = createRequire(import.meta.url)
-  for (const id of Object.keys(cache)) delete cache[id]
+  for (const id of Object.keys(cache)) {
+    // readable-stream is externalized node core streams
+    // for core perf reasons it's doing a lot of unusual
+    // things when it comes to loading and caching modules
+    // therefore it can't be reliably removed from the CJS
+    // cache once loaded. This is unlikely to affect most
+    // use cases:
+    if (/readable-stream/.test(id)) continue
+    delete cache[id]
+  }
   current = { counter: current.counter, entry: '', names: new Set(), mocks: {} }
 }
 
