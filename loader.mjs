@@ -1,4 +1,4 @@
-import { readSync } from 'fs'
+import { ReadStream } from 'tty'
 import { compileFunction as sanity } from 'vm'
 import { createRequire } from 'module'
 import { workerData } from 'worker_threads'
@@ -34,12 +34,13 @@ if (workerData) {
     meta[0] = code
   })
 
-  const buf = Buffer.alloc(1)
-  setInterval(() => {
-    readSync(fd, buf, 0, 1)
+  const stdin = new ReadStream(fd)
+  stdin.unref()
+  stdin.on('data', (buf) => {
     if (buf[0] === 3) process.exit(130) // SIGINT
     if (buf[0] === 4) process.exit(0) // EOF
-  }, 1000).unref()
+  })
+
 }
 
 const kMockalicious = Symbol.for('mockalicious')
