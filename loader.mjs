@@ -74,7 +74,7 @@ global[kMockalicious].clear = () => {
 
 export function resolve (specifier, ctx, defaultResolve) {
   const { names, counter } = current
-  if (/node:/.test(specifier)) specifier = specifier.split(':')[1]
+  if (/node:/.test(specifier)) return defaultResolve(specifier, ctx, defaultResolve)
   if (names.has(specifier)) {
     // counter busts cache
     return {
