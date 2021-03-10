@@ -52,6 +52,7 @@ function mockalicious (file) {
     if (typeof def === 'function') {
       module = Object.assign((...args) => def(...args), module)
     }
+    await module.default
     global[kMockalicious].clear()
     return module
   }
