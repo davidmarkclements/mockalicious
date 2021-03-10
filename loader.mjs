@@ -40,17 +40,25 @@ if (workerData) {
     if (buf[0] === 3) process.exit(130) // SIGINT
     if (buf[0] === 4) process.exit(0) // EOF
   })
-
 }
 
 const kMockalicious = Symbol.for('mockalicious')
 let current = { counter: 0, entry: '', names: new Set(), mocks: {} }
 global[kMockalicious] = ({ counter, entry, names, mocks } = {}) => {
   const require = createRequire(entry)
+  require.cache[kMockalicious] = require.cache[kMockalicious] || {}
   for (const name of names) {
-    require.cache[require.resolve(name)] = {
+    require.cache[kMockalicious][name] = {
       exports: mocks[name].default || mocks[name]
     }
+    Object.defineProperty(require.cache, require.resolve(name), {
+      get () {
+        return this[kMockalicious][name]
+      },
+      set (v) {
+        return (this[kMockalicious][name] = v)
+      }
+    })
   }
   current = { counter, entry, names, mocks }
 }
