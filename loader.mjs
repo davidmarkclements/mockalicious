@@ -44,8 +44,8 @@ if (workerData) {
 
 const kMockalicious = Symbol.for('mockalicious')
 let current = { counter: 0, entry: '', names: new Set(), mocks: {} }
-global[kMockalicious] = ({ counter, entry, names, mocks } = {}) => {
-  const require = createRequire(entry)
+global[kMockalicious] = ({ counter, file, entry, names, mocks } = {}) => {
+  const require = createRequire(file)
   require.cache[kMockalicious] = require.cache[kMockalicious] || {}
   for (const name of names) {
     require.cache[kMockalicious][name] = {
@@ -60,7 +60,7 @@ global[kMockalicious] = ({ counter, entry, names, mocks } = {}) => {
       }
     })
   }
-  current = { counter, entry, names, mocks }
+  current = { counter, file, entry, names, mocks }
 }
 
 global[kMockalicious].get = (key) => current.mocks[key]

@@ -43,7 +43,7 @@ function mockalicious (file) {
     entry = resolve(entry)
     global[kMockalicious].clear()
     counter++
-    global[kMockalicious]({ counter, entry, mocks, names: new Set(Object.keys(mocks)) })
+    global[kMockalicious]({ counter, file, entry, mocks, names: new Set(Object.keys(mocks)) })
 
     let module = null
     // counter busts cache
