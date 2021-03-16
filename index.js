@@ -39,7 +39,8 @@ function mockalicious (file) {
   }
   const { resolve } = createRequire(file)
   let counter = 0
-  return async (entry, mocks = {}) => {
+  let clearing = true
+  const load = async (entry, mocks = {}) => {
     entry = resolve(entry)
     global[kMockalicious].clear()
     counter++
@@ -53,9 +54,14 @@ function mockalicious (file) {
       module = Object.assign((...args) => def(...args), module)
     }
     await module.default
-    global[kMockalicious].clear()
+    if (clearing) global[kMockalicious].clear()
     return module
   }
+  load.preventClear = (prevent = true) => {
+    clearing = !prevent
+  }
+  load.clear = () => global[kMockalicious].clear()
+  return load
 }
 
 module.exports = mockalicious

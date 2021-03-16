@@ -52,6 +52,7 @@ global[kMockalicious] = ({ counter, file, entry, names, mocks } = {}) => {
       exports: mocks[name].default || mocks[name]
     }
     Object.defineProperty(require.cache, require.resolve(name), {
+      configurable: true,
       get () {
         return this[kMockalicious][name]
       },
@@ -89,7 +90,7 @@ export function resolve (specifier, ctx, defaultResolve) {
       url: `mockalicious:${specifier}:${counter}`
     }
   }
-  if (specifier[0] === '.') specifier += `?c=${counter}`
+  if (specifier[0] === '.' || specifier[0] === '/') specifier += `?c=${counter}`
   return defaultResolve(specifier, ctx, defaultResolve)
 }
 
