@@ -2,12 +2,19 @@ import { ReadStream } from 'tty'
 import { compileFunction as sanity } from 'vm'
 import { createRequire } from 'module'
 import { workerData } from 'worker_threads'
+import readline from 'readline'
 import SonicBoom from 'sonic-boom'
 const sonicOut = new SonicBoom({ fd: 1 })
 const sonicErr = new SonicBoom({ fd: 2 })
 
 process.stdout.write = (data) => sonicOut.write(data + '')
 process.stderr.write = (data) => sonicErr.write(data + '')
+
+if (!('clearLine' in process.stdout)) {
+  for (const method of ['clearLine', 'clearScreenDown', 'clearInterface', 'cursorTo', 'moveCursor']) {
+    process.stdout[method] = process.stderr[method] = readline[method]
+  }
+}
 
 if (workerData) {
   const { meta, fd } = workerData
