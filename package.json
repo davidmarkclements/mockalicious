@@ -1,6 +1,6 @@
 {
   "name": "mockalicious",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Keep on mocking in the free world",
   "main": "index.js",
   "scripts": {
