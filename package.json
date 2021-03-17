@@ -24,5 +24,13 @@
   },
   "devDependencies": {
     "tap": "^14.11.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidmarkclements/mockalicious.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davidmarkclements/mockalicious/issues"
+  },
+  "homepage": "https://github.com/davidmarkclements/mockalicious#readme"
 }
