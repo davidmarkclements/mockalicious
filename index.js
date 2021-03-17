@@ -7,6 +7,26 @@ const { Worker, SHARE_ENV } = require('worker_threads')
 const kMockalicious = Symbol.for('mockalicious')
 const loader = require.resolve('./loader.mjs')
 
+const {
+  prepareStackTrace = (error, stack) => `${error}\n    at ${stack.join('\n    at ')}`
+} = Error
+
+Error.prepareStackTrace = function (error, stack) {
+  let trace = prepareStackTrace(error, stack)
+  const cacheBusters = new Set()
+  for (const frame of stack) {
+    const filename = frame.getFileName()
+    if (filename === null) continue
+    const cacheBuster = filename.split('?')[1]
+    if (!cacheBuster) continue
+    cacheBusters.add(cacheBuster)
+  }
+  for (const cacheBuster of cacheBusters) {
+    trace = trace.replace(new RegExp('\\?' + cacheBuster, 'g'), '')
+  }
+  return trace
+}
+
 const normalize = (file) => {
   try {
     file = fileURLToPath(file)
