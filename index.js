@@ -46,6 +46,7 @@ function mockalicious (file) {
       ? process.stdin.fd
       : openSync('/dev/tty', 'rs')
     const worker = new Worker(file, {
+      stdin: true,
       workerData: { meta, fd },
       env: SHARE_ENV,
       execArgv: ['--experimental-loader=' + loader]
