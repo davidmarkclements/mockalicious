@@ -3,10 +3,11 @@ const sleep = require('atomic-sleep')
 const { openSync } = require('fs')
 const { fileURLToPath } = require('url')
 const { createRequire } = require('module')
-const { Worker, SHARE_ENV } = require('worker_threads')
+const { promisify } = require('util')
+const { Worker, isMainThread, SHARE_ENV } = require('worker_threads')
 const kMockalicious = Symbol.for('mockalicious')
 const loader = require.resolve('./loader.mjs')
-
+const timeout = promisify(setTimeout)
 const {
   prepareStackTrace = (error, stack) => `${error}\n    at ${stack.join('\n    at ')}`
 } = Error
@@ -74,7 +75,19 @@ function mockalicious (file) {
     if (typeof def === 'function') {
       module = Object.assign((...args) => def(...args), module)
     }
-    await module.default
+
+    if (isMainThread && module.default && typeof module.default.then === 'function') {
+      let timedout = false
+      await Promise.race([timeout(1500).then(() => { timedout = true }), module.default])
+      if (timedout) {
+        const err = Error('default export promise timed out')
+        err.code = 'ERR_TIMEOUT'
+        throw err
+      }
+    } else {
+      await module.default
+    }
+
     if (clearing) global[kMockalicious].clear()
     return module
   }
