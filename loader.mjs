@@ -40,7 +40,6 @@ if (workerData) {
   process.on('exit', (code) => {
     meta[0] = code
   })
-
   const stdin = new ReadStream(fd)
   stdin.unref()
   stdin.on('data', (buf) => {
@@ -56,7 +55,7 @@ global[kMockalicious] = ({ counter, file, entry, names, mocks } = {}) => {
   require.cache[kMockalicious] = require.cache[kMockalicious] || {}
   for (const name of names) {
     require.cache[kMockalicious][name] = {
-      exports: mocks[name].default || mocks[name]
+      exports: 'default' in mocks[name] ? mocks[name].default : mocks[name]
     }
     Object.defineProperty(require.cache, require.resolve(name), {
       configurable: true,
