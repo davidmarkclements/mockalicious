@@ -57,7 +57,14 @@ global[kMockalicious] = ({ counter, file, entry, names, mocks } = {}) => {
     require.cache[kMockalicious][name] = {
       exports: 'default' in mocks[name] ? mocks[name].default : mocks[name]
     }
-    Object.defineProperty(require.cache, require.resolve(name), {
+    let resolved = null
+    try {
+      resolved = require.resolve(name)
+    } catch {
+      resolved = name
+    }
+    
+    Object.defineProperty(require.cache, resolved, {
       configurable: true,
       get () {
         return this[kMockalicious][name]
