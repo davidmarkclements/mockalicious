@@ -1,3 +1,4 @@
+import module from 'module'
 import { ReadStream } from 'tty'
 import { compileFunction as sanity } from 'vm'
 import { createRequire } from 'module'
@@ -48,6 +49,13 @@ if (workerData) {
   })
 }
 
+const { _resolveFilename } = module
+const dummies = new Set()
+module._resolveFilename = (request, parent, isMain, options) => {
+  if (dummies.has(request)) return request
+  return _resolveFilename(request, parent, isMain, options)
+}
+
 const kMockalicious = Symbol.for('mockalicious')
 let current = { counter: 0, entry: '', names: new Set(), mocks: {} }
 global[kMockalicious] = ({ counter, file, entry, names, mocks } = {}) => {
@@ -62,6 +70,7 @@ global[kMockalicious] = ({ counter, file, entry, names, mocks } = {}) => {
       resolved = require.resolve(name)
     } catch {
       resolved = name
+      dummies.add(name)
     }
     
     Object.defineProperty(require.cache, resolved, {
